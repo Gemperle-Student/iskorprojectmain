@@ -1,0 +1,117 @@
+/* Role Selection Page Styles */
+.role-select-page {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+}
+
+.role-select-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.role-select-container {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+}
+
+.role-heading {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.role-subheading {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin-bottom: 3rem;
+  font-weight: 500;
+}
+
+.role-options {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.role-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 300px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 2px solid transparent;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.role-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-color: #e5e7eb;
+}
+
+.role-card.selected {
+  border-color: #4F46E5;
+  background-color: #f9f9ff;
+  box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2), 0 4px 6px -2px rgba(79, 70, 229, 0.1);
+}
+
+.role-icon {
+  margin-bottom: 1.5rem;
+  color: #4F46E5;
+  transition: transform 0.3s ease;
+}
+
+.role-card:hover .role-icon {
+  transform: scale(1.05);
+}
+
+.role-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.75rem;
+}
+
+.role-description {
+  color: #6b7280;
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .role-options {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .role-card {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 576px) {
+  .role-heading {
+    font-size: 2rem;
+  }
+  
+  .role-subheading {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+} 
