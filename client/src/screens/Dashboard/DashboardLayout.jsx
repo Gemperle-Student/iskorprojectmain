@@ -1,32 +1,69 @@
-import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { FaHome, FaBook, FaCog, FaQuestionCircle, FaSignOutAlt } from 'react-icons/fa';
 import './Dashboard.css';
 
 // Private function for resetting data during logout
 const resetAppData = () => {
   // Clear all user-related flags
   localStorage.removeItem('userRole');
-  localStorage.removeItem('teacherHasLoggedInBefore');
   
   // Reset student data to empty array for clean testing
   localStorage.setItem('iskr_students_data', JSON.stringify([]));
+  localStorage.removeItem('studentClasses');
 };
 
 const DashboardLayout = ({ children, userRole }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [classes, setClasses] = useState([]);
+  
+  // Function to load classes from localStorage
+  const loadClasses = () => {
+    if (userRole === 'Student' || localStorage.getItem('userRole')?.toLowerCase() === 'student') {
+      const savedClasses = localStorage.getItem('studentClasses');
+      if (savedClasses) {
+        setClasses(JSON.parse(savedClasses));
+      }
+    }
+  };
   
   useEffect(() => {
     // Check if user is logged in and has a role
     const role = localStorage.getItem('userRole');
     if (!role) {
-      navigate('/role-select');
+      localStorage.setItem('userRole', 'Student');
     }
-  }, [navigate]);
+    
+    // Initial load of classes
+    loadClasses();
+    
+    // Listen for class updates
+    const handleClassUpdate = () => {
+      loadClasses();
+    };
+    
+    // Add event listener for class updates
+    window.addEventListener('classesUpdated', handleClassUpdate);
+    
+    // Clean up event listener
+    return () => {
+      window.removeEventListener('classesUpdated', handleClassUpdate);
+    };
+  }, [navigate, userRole]);
 
   // Get user initials for profile display
   const getUserInitials = () => {
-    // For a real app, this would come from the user's name in the database
-    // For demo purposes, we'll use a placeholder based on role
+    const username = localStorage.getItem('username');
+    if (username) {
+      // Get first letter of first and last name (if available)
+      const parts = username.split(' ');
+      if (parts.length > 1) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      // If just one name, get first 2 letters
+      return username.substring(0, 2).toUpperCase();
+    }
     return userRole === 'Teacher' ? 'TC' : 'ST';
   };
 
@@ -38,10 +75,17 @@ const DashboardLayout = ({ children, userRole }) => {
     navigate('/');
   };
 
+  // Check if a link is active
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <Link to="/" className="logo-text">isk<span className="logo-dot">9</span>r</Link>
+        <Link to="/" className="logo-text">
+          isk<span className="logo-dot">9</span>r
+        </Link>
         <div className="profile-section">
           <div className="profile-icon">
             <span className="user-initials">{getUserInitials()}</span>
@@ -52,68 +96,70 @@ const DashboardLayout = ({ children, userRole }) => {
       <div className="dashboard-content">
         <aside className="dashboard-sidebar">
           <nav className="sidebar-nav">
-            <ul className="nav-menu">
-              <li className="nav-item">
-                <Link to="/dashboard" className="nav-link">
-                  <i className="icon-home">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                  </i>
-                  <span>Home</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/dashboard/classroom" className="nav-link">
-                  <i className="icon-classroom">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                    </svg>
-                  </i>
-                  <span>Classroom</span>
-                </Link>
-              </li>
-            </ul>
-            <div className="sidebar-divider"></div>
-            <ul className="nav-menu bottom-menu">
-              <li className="nav-item">
-                <Link to="/dashboard/settings" className="nav-link">
-                  <i className="icon-settings">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="3"></circle>
-                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                    </svg>
-                  </i>
-                  <span>Settings</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/dashboard/help" className="nav-link">
-                  <i className="icon-help">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                      <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
-                  </i>
-                  <span>Help</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <button className="nav-link logout-button" onClick={handleLogout}>
-                  <i className="icon-logout">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                      <polyline points="16 17 21 12 16 7"></polyline>
-                      <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                  </i>
-                  <span>Log out</span>
-                </button>
-              </li>
-            </ul>
+            <div className="sidebar-inner">
+              <ul className="nav-menu">
+                <li className="nav-item">
+                  <Link 
+                    to="/dashboard" 
+                    className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
+                  >
+                    <FaHome className="nav-icon" />
+                    <span>Home</span>
+                  </Link>
+                </li>
+              </ul>
+              
+              {userRole === 'Student' && classes.length > 0 && (
+                <>
+                  <div className="sidebar-divider"></div>
+                  <div className="sidebar-heading">My Classes</div>
+                  <ul className="class-list">
+                    {classes.map(classItem => (
+                      <li key={classItem.id} className="class-item">
+                        <Link 
+                          to={`/dashboard/class/${classItem.id}`} 
+                          className={`class-link ${location.pathname.includes(`/dashboard/class/${classItem.id}`) ? 'active' : ''}`}
+                        >
+                          <div 
+                            className="class-indicator"
+                            style={{ backgroundColor: classItem.color }}
+                          ></div>
+                          <span>{classItem.name}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              <div className="sidebar-divider"></div>
+              <ul className="nav-menu bottom-menu">
+                <li className="nav-item">
+                  <Link 
+                    to="/dashboard/settings" 
+                    className={`nav-link ${isActive('/dashboard/settings') ? 'active' : ''}`}
+                  >
+                    <FaCog className="nav-icon" />
+                    <span>Settings</span>
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link 
+                    to="/dashboard/help" 
+                    className={`nav-link ${isActive('/dashboard/help') ? 'active' : ''}`}
+                  >
+                    <FaQuestionCircle className="nav-icon" />
+                    <span>Help</span>
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <button className="nav-link logout-button" onClick={handleLogout}>
+                    <FaSignOutAlt className="nav-icon" />
+                    <span>Log out</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
           </nav>
         </aside>
         

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './../../components/ui/components.css';
 
-export const GetStarted = () => {
+const GetStarted = () => {
   return (
     <div className="get-started">
       <header className="header">
@@ -38,6 +38,30 @@ export const GetStarted = () => {
               </div>
               <div className="hero-image">
                 <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Students working together" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="about" id="about">
+          <div className="container">
+            <div className="about-content">
+              <div className="about-image">
+                <img src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Classroom setting" />
+              </div>
+              <div className="about-text">
+                <h2>About Iskor</h2>
+                <p>We're dedicated to transforming education through technology. Our platform helps educators make data-driven decisions while saving time on administrative tasks.</p>
+                <div className="about-columns">
+                  <div className="about-column">
+                    <h3>Our Mission</h3>
+                    <p>To empower educators with tools that enhance student learnings outcomes.</p>
+                  </div>
+                  <div className="about-column">
+                    <h3>Our Vision</h3>
+                    <p>Creating a future where every student reaches their full potential.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -93,30 +117,6 @@ export const GetStarted = () => {
             </div>
             <div className="workspace-image">
               <img src="https://images.unsplash.com/photo-1516387938699-a93567ec168e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80" alt="Workspace with laptop" />
-            </div>
-          </div>
-        </section>
-
-        <section className="about" id="about">
-          <div className="container">
-            <div className="about-content">
-              <div className="about-image">
-                <img src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Classroom setting" />
-              </div>
-              <div className="about-text">
-                <h2>About Iskor</h2>
-                <p>We're dedicated to transforming education through technology. Our platform helps educators make data-driven decisions while saving time on administrative tasks.</p>
-                <div className="about-columns">
-                  <div className="about-column">
-                    <h3>Our Mission</h3>
-                    <p>To empower educators with tools that enhance student learnings outcomes.</p>
-                  </div>
-                  <div className="about-column">
-                    <h3>Our Vision</h3>
-                    <p>Creating a future where every student reaches their full potential.</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </section>
@@ -226,3 +226,5 @@ export const GetStarted = () => {
     </div>
   );
 };
+
+export default GetStarted;

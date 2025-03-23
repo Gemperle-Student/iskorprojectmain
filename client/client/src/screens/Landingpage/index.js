@@ -1,1 +1,0 @@
-export { Landingpage } from "./LandingPage";

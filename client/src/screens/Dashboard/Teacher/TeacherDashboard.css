@@ -801,4 +801,289 @@
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Access Code Button Styles */
+.generate-code-btn,
+.view-codes-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f0f4ff;
+  color: #4f46e5;
+  border: 1px solid #e0e7ff;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.generate-code-btn:hover,
+.view-codes-btn:hover {
+  background-color: #e0e7ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
+}
+
+.generate-code-btn svg,
+.view-codes-btn svg {
+  color: #4f46e5;
+}
+
+/* Access Code Display */
+.access-code-display {
+  display: flex;
+  align-items: center;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.access-code-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background-color: #4f46e5;
+}
+
+.access-code-display .code {
+  font-family: 'Courier New', monospace;
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  color: #334155;
+  flex-grow: 1;
+  text-align: center;
+  background: linear-gradient(to right, #4f46e5, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.copy-code-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.copy-code-btn:hover {
+  background-color: #4338ca;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.code-instructions,
+.code-expiry {
+  margin: 16px 0;
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.code-instructions strong {
+  color: #334155;
+  font-weight: 600;
+}
+
+.code-expiry {
+  font-style: italic;
+  padding: 10px 16px;
+  background-color: #fffbeb;
+  border-left: 3px solid #f59e0b;
+  border-radius: 4px;
+}
+
+/* Active Codes List */
+.active-codes-modal {
+  max-width: 550px;
+}
+
+.active-codes-list {
+  margin: 20px 0;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.active-codes-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.active-codes-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.active-codes-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.active-code-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.active-code-item:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  transform: translateY(-2px);
+}
+
+.active-code-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: #4f46e5;
+}
+
+.code-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.code-value {
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: bold;
+  color: #334155;
+  letter-spacing: 2px;
+}
+
+.student-name-code {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.code-expiry {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.delete-code-btn {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-code-btn:hover {
+  background-color: #fecaca;
+  transform: scale(1.05);
+}
+
+.no-codes-message {
+  padding: 40px 0;
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+  background-color: #f8fafc;
+  border-radius: 10px;
+  border: 1px dashed #e2e8f0;
+}
+
+.no-codes-message::before {
+  content: '⚠️';
+  display: block;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.btn-primary {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #4338ca;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* Add these styles for the selected student row */
+.selected-student {
+  background-color: #f0f9ff !important;
+  border-left: 3px solid #0369a1;
+}
+
+tr {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+tr:hover {
+  background-color: #f8fafc;
+}
+
+.code-instructions {
+  margin-bottom: 16px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Update the instructions in the code modal */
+.active-code-item .code-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.student-name-code {
+  font-size: 12px;
+  color: #64748b;
 } 

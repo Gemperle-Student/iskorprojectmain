@@ -13,7 +13,7 @@ import {
   import { Card, CardContent } from "../../components/ui/card";
   import { Separator } from "../../components/ui/separator";
   
-  export const Landingpage = () => {
+  const Landingpage = () => {
     // Navigation links data
     const navLinks = [
       { title: "Home", href: "#" },
@@ -149,43 +149,70 @@ import {
             </div>
           </section>
   
-          <Separator className="w-full h-px bg-black" />
-  
           {/* Features Section */}
           <section id="features" className="w-full bg-white py-20">
-            <div className="text-center">
-              <h2 className="font-bold text-[#4646d2] text-[40px] leading-[22px]">
+            <div className="text-center max-w-[800px] mx-auto mb-8">
+              <h2 className="font-bold text-[#4646d2] text-[48px] mb-4">
                 Powerful Features
               </h2>
-              <p className="mt-8 text-2xl leading-[22px] text-[#000000cc]">
+              <p className="text-[#333333] text-xl">
                 Everything you need to track and improve student performance
               </p>
             </div>
-  
-            <div className="flex justify-center gap-6 mt-12">
-              {featureCards.map((feature, index) => (
-                <Card
-                  key={index}
-                  className="w-[276px] h-[161px] bg-[#fefefe] border-[#d9d9d9] shadow-[0px_4px_4px_#00000040] rounded-[10px]"
-                >
-                  <CardContent className="p-0">
-                    <div className="p-[18px]">
-                      <div className="mb-4">{feature.icon}</div>
-                      <h3 className="font-bold text-black text-base leading-[22px] mb-4">
-                        {feature.title}
-                      </h3>
-                      <p className="text-[#000000cc] text-sm leading-[15px]">
-                        {feature.description}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+
+            <div className="flex justify-center items-center gap-4 mt-12 px-8 max-w-[1200px] mx-auto flex-wrap md:flex-nowrap">
+              <div className="w-[270px] bg-white border border-[#e2e8f0] rounded-lg p-6 shadow-sm">
+                <div className="text-[#4646d2] mb-3">
+                  <LineChartIcon className="w-7 h-7" />
+                </div>
+                <h3 className="font-semibold text-[#1e293b] text-lg mb-2">
+                  Real-Time Progress Tracking
+                </h3>
+                <p className="text-[#64748b] text-sm">
+                  Monitor student performance as it happens with instant updates and notifications.
+                </p>
+              </div>
+              
+              <div className="w-[270px] bg-white border border-[#e2e8f0] rounded-lg p-6 shadow-sm">
+                <div className="text-[#4646d2] mb-3">
+                  <PieChartIcon className="w-7 h-7" />
+                </div>
+                <h3 className="font-semibold text-[#1e293b] text-lg mb-2">
+                  Comprehensive Analytics
+                </h3>
+                <p className="text-[#64748b] text-sm">
+                  Gain insights through detailed reports and visual data representations.
+                </p>
+              </div>
+              
+              <div className="w-[270px] bg-white border border-[#e2e8f0] rounded-lg p-6 shadow-sm">
+                <div className="text-[#4646d2] mb-3">
+                  <BarChartBigIcon className="w-7 h-7" />
+                </div>
+                <h3 className="font-semibold text-[#1e293b] text-lg mb-2">
+                  Performance Metrics
+                </h3>
+                <p className="text-[#64748b] text-sm">
+                  Track key performance indicators and identify areas of improvement.
+                </p>
+              </div>
+              
+              <div className="w-[270px] bg-white border border-[#e2e8f0] rounded-lg p-6 shadow-sm">
+                <div className="text-[#4646d2] mb-3">
+                  <ActivityIcon className="w-7 h-7" />
+                </div>
+                <h3 className="font-semibold text-[#1e293b] text-lg mb-2">
+                  Activity Monitoring
+                </h3>
+                <p className="text-[#64748b] text-sm">
+                  Keep track of student engagement and participation in real-time.
+                </p>
+              </div>
             </div>
-  
-            <div className="flex justify-center mt-10">
+
+            <div className="flex justify-center mt-16 px-6">
               <img
-                className="w-[1097px] h-[515px] object-cover"
+                className="w-full max-w-[1097px] rounded-lg shadow-md object-cover"
                 alt="Iskor Dashboard Interface"
                 src="https://c.animaapp.com/m8jl5xp7VAdhAz/img/2-25.png"
               />
@@ -304,4 +331,6 @@ import {
       </div>
     );
   };
+  
+  export default Landingpage;
   

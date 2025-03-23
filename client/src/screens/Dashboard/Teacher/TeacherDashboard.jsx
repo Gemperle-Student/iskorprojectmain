@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaPlus, FaSearch, FaTimes, FaKey, FaList } from 'react-icons/fa';
 import DashboardLayout from '../DashboardLayout';
 import { getScoresByTeacher, updateScore } from '../../../services/scoreService';
+import { 
+  generateClassAccessCode, 
+  getActiveAccessCodes, 
+  deleteAccessCode 
+} from '../../../services/codeGeneratorService';
 import './TeacherDashboard.css';
 
 const TeacherDashboard = () => {
@@ -25,6 +31,12 @@ const TeacherDashboard = () => {
   });
   const [modalError, setModalError] = useState('');
   
+  // Code generation state
+  const [showCodeModal, setShowCodeModal] = useState(false);
+  const [generatedCode, setGeneratedCode] = useState('');
+  const [activeCodes, setActiveCodes] = useState({});
+  const [showActiveCodesModal, setShowActiveCodesModal] = useState(false);
+  
   // Score weights state
   const [showWeightsModal, setShowWeightsModal] = useState(false);
   const [weights, setWeights] = useState(() => {
@@ -42,6 +54,14 @@ const TeacherDashboard = () => {
     preFinal: 40
   });
 
+  /**
+   * Get all active access codes and update state
+   */
+  const loadActiveCodes = () => {
+    const codes = getActiveAccessCodes();
+    setActiveCodes(codes);
+  };
+
   useEffect(() => {
     // Check if user is logged in as a teacher
     const role = localStorage.getItem('userRole');
@@ -50,41 +70,13 @@ const TeacherDashboard = () => {
       return;
     }
     
-    // Check if this is first login (for demo purposes)
-    const hasLoggedInBefore = localStorage.getItem('teacherHasLoggedInBefore');
-    
-    // Load all students (or initialize empty state for first-time users)
+    // Load all students
     const loadStudents = async () => {
       try {
         setLoading(true);
         
-        // If first time, don't load any students and mark as first login
-        if (!hasLoggedInBefore) {
-          console.log('First time login, initializing empty state');
-          
-          // Store flag that teacher has logged in before
-          localStorage.setItem('teacherHasLoggedInBefore', 'true');
-          
-          // Initialize empty student list and summary
-          setStudents([]);
-          setSummary({
-            total: 0,
-            good: 0,
-            moderate: 0,
-            bad: 0,
-            ungraded: 0
-          });
-          
-          // Also initialize empty data in localStorage to ensure
-          // subsequent logins don't show default data
-          localStorage.setItem('iskr_students_data', JSON.stringify([]));
-          
-          setLoading(false);
-          return;
-        }
-        
-        // Otherwise load students from service
-        console.log('Not first login, loading student data');
+        // Load students from service
+        console.log('Loading student data');
         const data = await getScoresByTeacher();
         
         // Transform data to include quizScores array
@@ -119,6 +111,10 @@ const TeacherDashboard = () => {
         
         setStudents(transformedData);
         updateSummaryStats(transformedData);
+        
+        // Load active codes
+        loadActiveCodes();
+        
         setLoading(false);
       } catch (err) {
         console.error('Error loading students:', err);
@@ -128,12 +124,6 @@ const TeacherDashboard = () => {
     };
 
     loadStudents();
-    
-    // Clear first-time login flag when component unmounts (for testing purposes only)
-    return () => {
-      // Uncomment next line to reset the first-time login state when navigating away
-      // localStorage.removeItem('teacherHasLoggedInBefore');
-    };
   }, [navigate]);
 
   const updateSummaryStats = (studentData) => {
@@ -473,6 +463,91 @@ const TeacherDashboard = () => {
     setShowWeightsModal(false);
   };
 
+  /**
+   * Generate an access code for a specific student to import their scores
+   */
+  const generateAccessCode = () => {
+    if (!selectedStudent) {
+      alert('Please select a student first by clicking on a row in the table');
+      return;
+    }
+    
+    // Get class info
+    const classId = "class-" + Date.now();
+    const className = "Introduction to Computer Science";
+    
+    // Collect the student's scores
+    const studentScores = {};
+    
+    // Use quizScores array to collect scores
+    if (selectedStudent.quizScores[0] !== null) studentScores.quiz1 = selectedStudent.quizScores[0];
+    if (selectedStudent.quizScores[1] !== null) studentScores.quiz2 = selectedStudent.quizScores[1];
+    if (selectedStudent.quizScores[2] !== null) studentScores.quiz3 = selectedStudent.quizScores[2];
+    if (selectedStudent.quizScores[3] !== null) studentScores.midterm = selectedStudent.quizScores[3];
+    if (selectedStudent.quizScores[4] !== null) studentScores.finalExam = selectedStudent.quizScores[4];
+    
+    // Calculate the final score with weights
+    const quizWeight = weights.quizAvg / 3; // Divide equally among 3 quizzes
+    const midtermWeight = weights.midterm;
+    const finalWeight = weights.preFinal;
+    
+    // Prepare student data with scores and weights
+    const scoreData = {
+      finalScore: selectedStudent.weightedScore || 0,
+      scores: {
+        quiz1: { score: studentScores.quiz1 || 0, weight: quizWeight },
+        quiz2: { score: studentScores.quiz2 || 0, weight: quizWeight },
+        quiz3: { score: studentScores.quiz3 || 0, weight: quizWeight },
+        midterm: { score: studentScores.midterm || 0, weight: midtermWeight },
+        finalExam: { score: studentScores.finalExam || 0, weight: finalWeight }
+      },
+      notes: "Student's progress notes can be added here."
+    };
+    
+    // Generate the code
+    const code = generateClassAccessCode(
+      classId, 
+      className, 
+      selectedStudent.id, 
+      selectedStudent.name,
+      scoreData
+    );
+    
+    setGeneratedCode(code);
+    setShowCodeModal(true);
+    
+    // Update active codes list
+    loadActiveCodes();
+  };
+  
+  /**
+   * Delete an access code
+   */
+  const handleDeleteCode = (code) => {
+    if (window.confirm(`Are you sure you want to delete code ${code}?`)) {
+      deleteAccessCode(code);
+      loadActiveCodes();
+    }
+  };
+  
+  /**
+   * Copy code to clipboard
+   */
+  const copyCodeToClipboard = () => {
+    navigator.clipboard.writeText(generatedCode)
+      .then(() => {
+        alert('Code copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy code: ', err);
+      });
+  };
+
+  // When a student row is clicked, select that student
+  const selectStudent = (student) => {
+    setSelectedStudent(student);
+  };
+
   if (loading) {
     return (
       <DashboardLayout userRole="Teacher">
@@ -502,6 +577,31 @@ const TeacherDashboard = () => {
             <div className="header-with-actions">
               <h1 className="dashboard-title">Class Performance Dashboard</h1>
               <div className="header-buttons">
+                <button 
+                  className="generate-code-btn"
+                  onClick={() => {
+                    if (!selectedStudent) {
+                      alert('Please select a student first by clicking on a row in the table');
+                    } else {
+                      generateAccessCode();
+                    }
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Generate Access Code
+                </button>
+                <button 
+                  className="view-codes-btn"
+                  onClick={() => setShowActiveCodesModal(true)}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  View Active Codes
+                </button>
                 <button 
                   className="customize-weights-btn"
                   onClick={openWeightsModal}
@@ -657,7 +757,11 @@ const TeacherDashboard = () => {
               </thead>
               <tbody>
                 {filteredStudents.map((student) => (
-                  <tr key={student.id}>
+                  <tr 
+                    key={student.id} 
+                    className={`${selectedStudent && selectedStudent.id === student.id ? 'selected-student' : ''}`}
+                    onClick={() => selectStudent(student)}
+                  >
                     <td className="student-id-col">{student.id}</td>
                     <td className="student-col">{student.name}</td>
                     <td className="score-col">
@@ -668,6 +772,7 @@ const TeacherDashboard = () => {
                         value={student.quizScores[0] !== null ? student.quizScores[0] : ''}
                         onChange={(e) => handleQuizScoreChange(student.id, 0, e.target.value)}
                         aria-label={`${student.name}'s Quiz 1 score`}
+                        onClick={(e) => e.stopPropagation()}
                       />
                     </td>
                     <td className="score-col">
@@ -678,6 +783,7 @@ const TeacherDashboard = () => {
                         value={student.quizScores[1] !== null ? student.quizScores[1] : ''}
                         onChange={(e) => handleQuizScoreChange(student.id, 1, e.target.value)}
                         aria-label={`${student.name}'s Quiz 2 score`}
+                        onClick={(e) => e.stopPropagation()}
                       />
                     </td>
                     <td className="score-col">
@@ -688,6 +794,7 @@ const TeacherDashboard = () => {
                         value={student.quizScores[2] !== null ? student.quizScores[2] : ''}
                         onChange={(e) => handleQuizScoreChange(student.id, 2, e.target.value)}
                         aria-label={`${student.name}'s Quiz 3 score`}
+                        onClick={(e) => e.stopPropagation()}
                       />
                     </td>
                     <td className="score-col">
@@ -698,6 +805,7 @@ const TeacherDashboard = () => {
                         value={student.quizScores[3] !== null ? student.quizScores[3] : ''}
                         onChange={(e) => handleQuizScoreChange(student.id, 3, e.target.value)}
                         aria-label={`${student.name}'s Midterm score`}
+                        onClick={(e) => e.stopPropagation()}
                       />
                     </td>
                     <td className="score-col">
@@ -708,6 +816,7 @@ const TeacherDashboard = () => {
                         value={student.quizScores[4] !== null ? student.quizScores[4] : ''}
                         onChange={(e) => handleQuizScoreChange(student.id, 4, e.target.value)}
                         aria-label={`${student.name}'s Pre-Final score`}
+                        onClick={(e) => e.stopPropagation()}
                       />
                     </td>
                     <td className="score-col final-score">
@@ -738,7 +847,10 @@ const TeacherDashboard = () => {
                         <button 
                           className="reset-score-btn" 
                           title="Reset Score"
-                          onClick={() => openResetConfirmModal(student)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openResetConfirmModal(student);
+                          }}
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -747,7 +859,10 @@ const TeacherDashboard = () => {
                         <button 
                           className="delete-student-btn" 
                           title="Delete Student"
-                          onClick={(e) => openDeleteConfirmModal(student, e)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openDeleteConfirmModal(student, e);
+                          }}
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -973,6 +1088,87 @@ const TeacherDashboard = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+        
+        {/* Generated Code Modal */}
+        {showCodeModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>Student Access Code Generated</h3>
+              <p className="code-instructions">
+                Share this code with <strong>{selectedStudent?.name}</strong>. They can use it to import their scores.
+              </p>
+              
+              <div className="access-code-display">
+                <span className="code">{generatedCode}</span>
+                <button 
+                  className="copy-code-btn"
+                  onClick={copyCodeToClipboard}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                  </svg>
+                  Copy
+                </button>
+              </div>
+              
+              <p className="code-expiry">
+                This code will expire in 7 days. It can only be used by this specific student.
+              </p>
+              
+              <div className="modal-actions">
+                <button className="btn-primary" onClick={() => setShowCodeModal(false)}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Active Codes Modal */}
+        {showActiveCodesModal && (
+          <div className="modal-overlay">
+            <div className="modal-content active-codes-modal">
+              <h3>Active Student Access Codes</h3>
+              
+              {!activeCodes || activeCodes.length === 0 ? (
+                <p className="no-codes-message">
+                  No active access codes found. Select a student and generate a code to share.
+                </p>
+              ) : (
+                <div className="active-codes-list">
+                  {activeCodes.map((data) => {
+                    const expiryDate = new Date(data.expiryDate);
+                    const formattedDate = expiryDate.toLocaleDateString();
+                    
+                    return (
+                      <div className="active-code-item" key={data.code}>
+                        <div className="code-info">
+                          <div className="code-value">{data.code}</div>
+                          <div className="student-name-code">For: {data.studentName}</div>
+                          <div className="code-expiry">Expires: {formattedDate}</div>
+                        </div>
+                        <button 
+                          className="delete-code-btn"
+                          onClick={() => handleDeleteCode(data.code)}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              
+              <div className="modal-actions">
+                <button className="btn-primary" onClick={() => setShowActiveCodesModal(false)}>
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         )}

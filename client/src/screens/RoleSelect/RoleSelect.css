@@ -114,4 +114,29 @@
     font-size: 1rem;
     margin-bottom: 2rem;
   }
+}
+
+.direct-login-button {
+  display: block;
+  margin: 2rem auto 0;
+  padding: 1rem 2rem;
+  background-color: #4F46E5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(79, 70, 229, 0.25);
+}
+
+.direct-login-button:hover {
+  background-color: #4338CA;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(79, 70, 229, 0.3);
+}
+
+.direct-login-button:active {
+  transform: translateY(0);
 } 

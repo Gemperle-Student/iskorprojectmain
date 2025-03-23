@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './../../components/ui/components.css';
 import './Signup.css';
 
-export const Signup = () => {
+const Signup = () => {
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState('');
   const [formData, setFormData] = useState({
@@ -161,4 +161,6 @@ export const Signup = () => {
       </main>
     </div>
   );
-}; 
+};
+
+export default Signup; 

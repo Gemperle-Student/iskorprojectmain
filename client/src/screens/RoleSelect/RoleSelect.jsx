@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './../../components/ui/components.css';
 import './RoleSelect.css';
 
-export const RoleSelect = () => {
+const RoleSelect = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedRole, setSelectedRole] = useState('');
@@ -11,6 +11,14 @@ export const RoleSelect = () => {
   // Parse query parameters to check if the user came from the signup page
   const queryParams = new URLSearchParams(location.search);
   const fromPath = queryParams.get('from') || '';
+
+  useEffect(() => {
+    // Check if user already has a role
+    const existingRole = localStorage.getItem('userRole');
+    if (existingRole) {
+      setSelectedRole(existingRole);
+    }
+  }, []);
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
@@ -22,6 +30,7 @@ export const RoleSelect = () => {
     } else if (fromPath === 'login') {
       navigate('/login');
     } else {
+      // Always navigate to login
       navigate('/login');
     }
   };
@@ -94,4 +103,6 @@ export const RoleSelect = () => {
       </main>
     </div>
   );
-}; 
+};
+
+export default RoleSelect; 

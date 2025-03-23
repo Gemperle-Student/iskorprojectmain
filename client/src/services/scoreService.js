@@ -3,7 +3,7 @@
  * 
  * This service provides methods for working with student scores.
  * In a real application, these would communicate with an API.
- * For this demo, we're using localStorage to persist data.
+ * We're using localStorage to persist data.
  */
 
 // Key for storing all student data in localStorage
@@ -134,115 +134,133 @@ const saveStudents = (students) => {
 };
 
 /**
- * Get scores for teacher dashboard
- * @returns {Array} Array of student data for teacher view
+ * Get all students' scores as a teacher
+ * @returns {Array} Array of student objects with scores
  */
 export const getScoresByTeacher = () => {
-  // For this demo, we'll respect the 'teacherHasLoggedInBefore' flag
-  // In a real app, this would be a server-side check
-  const hasLoggedInBefore = localStorage.getItem('teacherHasLoggedInBefore');
+  // In a real app, this would fetch from an API
+  // We'll use localStorage to persist data
+  const savedData = localStorage.getItem('iskr_students_data');
   
-  // If it's the first login, return an empty array and initialize with empty data
-  if (!hasLoggedInBefore) {
-    // Make sure we initialize the data store with an empty array on first login
-    if (!localStorage.getItem(STUDENTS_STORAGE_KEY)) {
-      localStorage.setItem(STUDENTS_STORAGE_KEY, JSON.stringify([]));
-    }
-    return [];
+  if (savedData) {
+    return JSON.parse(savedData);
   }
   
-  // Otherwise, return the stored students (with defaults if needed)
-  const students = getAllStudents();
-  return students;
+  // Default data for first login
+  const defaultData = [
+    {
+      id: 'S1001',
+      name: 'Alex Johnson',
+      quiz1: 85,
+      quiz2: 92,
+      quiz3: 78,
+      midterm: 88,
+      prefinal: 91
+    },
+    {
+      id: 'S1002',
+      name: 'Jamie Smith',
+      quiz1: 75,
+      quiz2: 68,
+      quiz3: 72,
+      midterm: 71,
+      prefinal: 73
+    },
+    {
+      id: 'S1003',
+      name: 'Taylor Williams',
+      quiz1: 45,
+      quiz2: 52,
+      quiz3: 39,
+      midterm: 48,
+      prefinal: 42
+    }
+  ];
+  
+  // Save default data to localStorage
+  localStorage.setItem('iskr_students_data', JSON.stringify(defaultData));
+  
+  return defaultData;
 };
 
 /**
  * Update a student's score
- * @param {string} studentId Student ID
- * @param {number} score The new score value (0-100)
- * @returns {Object} The updated student with new status
+ * @param {string} studentId - ID of the student
+ * @param {string} scoreType - Type of score (quiz1, midterm, etc.)
+ * @param {number} score - New score value
+ * @returns {Object} Updated student object
  */
-export const updateScore = async (studentId, score) => {
-  const students = getAllStudents();
-  const studentIndex = students.findIndex(s => s.id === studentId);
+export const updateScore = (studentId, scoreType, score) => {
+  const students = getScoresByTeacher();
   
-  if (studentIndex === -1) {
-    throw new Error(`Student with ID ${studentId} not found`);
-  }
+  const updatedStudents = students.map(student => {
+    if (student.id === studentId) {
+      return {
+        ...student,
+        [scoreType]: score
+      };
+    }
+    return student;
+  });
   
-  // Calculate new status
-  const newStatus = determineStatus(score);
+  // Save updated data
+  localStorage.setItem('iskr_students_data', JSON.stringify(updatedStudents));
   
-  // Update student
-  students[studentIndex] = {
-    ...students[studentIndex],
-    score,
-    status: newStatus
-  };
-  
-  // Save changes
-  saveStudents(students);
-  
-  // Return updated student
-  return students[studentIndex];
+  // Return the updated student
+  return updatedStudents.find(student => student.id === studentId);
 };
 
 /**
- * Get formatted student data for the student dashboard
- * @param {string} studentId Optional student ID (if not provided, uses the first student)
- * @returns {Object} Formatted student data for student view
+ * Get formatted student data for student dashboard
+ * @returns {Object} Formatted student object for dashboard
  */
-export const getFormattedStudentForDashboard = (studentId) => {
-  const students = getAllStudents();
-  const student = studentId 
-    ? students.find(s => s.id === studentId)
-    : students[0];
+export const getFormattedStudentForDashboard = () => {
+  // In a real app, this would authenticate the current user
+  // and return their specific data
   
-  if (!student) {
+  const students = getScoresByTeacher();
+  
+  if (!students || students.length === 0) {
     return null;
   }
   
-  // Use actual values from the student record if they exist
-  return {
+  const student = students[0];
+  
+  // Format data for student dashboard
+  const formattedStudent = {
     id: student.id,
     name: student.name,
-    status: student.status,
-    averageScore: student.score,
+    status: calculateStatus(student),
     quizScores: [
-      { 
-        id: "Q1", 
-        name: "Quiz 1", 
-        score: student.quiz1 || Math.round(student.score * 0.25), 
-        total: 50 // Quizzes might have different total points
-      },
-      { 
-        id: "Q2", 
-        name: "Quiz 2", 
-        score: student.quiz2 || Math.round(student.score * 0.25), 
-        total: 30 // Illustrating different quiz totals
-      },
-      { 
-        id: "Q3", 
-        name: "Quiz 3", 
-        score: student.quiz3 || Math.round(student.score * 0.25), 
-        total: 20 // Illustrating different quiz totals
-      }
+      { id: 'Q1', name: 'Quiz 1', score: student.quiz1, total: 100 },
+      { id: 'Q2', name: 'Quiz 2', score: student.quiz2, total: 100 },
+      { id: 'Q3', name: 'Quiz 3', score: student.quiz3, total: 100 }
     ],
     activityScores: [
-      { 
-        id: "M1", 
-        name: "Mid-Term", 
-        score: student.midterm || Math.round(student.score), 
-        total: 100
-      },
-      { 
-        id: "F1", 
-        name: "Pre-Final", 
-        score: student.prefinal || Math.round(student.score * 0.9), 
-        total: 100
-      }
+      { id: 'M1', name: 'Midterm Exam', score: student.midterm, total: 100 },
+      { id: 'F1', name: 'Pre-Final Exam', score: student.prefinal, total: 100 }
     ]
   };
+  
+  return formattedStudent;
+};
+
+/**
+ * Calculate the status based on all scores
+ * @param {Object} student - Student object with scores
+ * @returns {string} Status (good, moderate, bad)
+ */
+const calculateStatus = (student) => {
+  // Calculate average of quiz scores
+  const quizAvg = (student.quiz1 + student.quiz2 + student.quiz3) / 3;
+  
+  // Calculate weighted score (30% quizzes, 30% midterm, 40% pre-final)
+  const weightedScore = (quizAvg * 0.3) + (student.midterm * 0.3) + (student.prefinal * 0.4);
+  
+  // Determine status based on weighted score
+  if (weightedScore >= 70) return 'good';
+  if (weightedScore >= 40) return 'moderate';
+  return 'bad';
 };
 
 /**
