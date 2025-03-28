@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaHome, FaBook, FaCog, FaQuestionCircle, FaSignOutAlt } from 'react-icons/fa';
+import logo from '../../assets/images/logo1 1.png';
 import './Dashboard.css';
 
 // Private function for resetting data during logout
@@ -83,8 +84,12 @@ const DashboardLayout = ({ children, userRole }) => {
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <Link to="/" className="logo-text">
-          isk<span className="logo-dot">9</span>r
+        <Link to="/" className="logo-container dashboard-logo">
+          <img 
+            src={logo} 
+            alt="Iskor" 
+            className="dashboard-logo-image"
+          />
         </Link>
         <div className="profile-section">
           <div className="profile-icon">

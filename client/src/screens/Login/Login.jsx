@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../../assets/images/logo1 1.png';
 import './../../components/ui/components.css';
 import './Login.css';
 
@@ -59,7 +60,23 @@ const Login = () => {
       <header className="header">
         <div className="container">
           <div className="header-content">
-            <Link to="/" className="logo-text">isk<span className="logo-dot">9</span>r</Link>
+            <Link to="/" className="logo-container">
+              <img 
+                src={logo} 
+                alt="Iskor" 
+                className="auth-logo-image"
+                style={{ 
+                  height: '150px', 
+                  width: 'auto',
+                  display: 'block',
+                  backgroundColor: 'transparent',
+                  padding: '0',
+                  margin: '-40px 0',
+                  objectFit: 'contain',
+                  mixBlendMode: 'darken'
+                }}
+              />
+            </Link>
             <nav className="nav">
               <ul className="nav-list">
                 <li><Link to="/">Home</Link></li>

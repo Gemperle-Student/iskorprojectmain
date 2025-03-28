@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaPlus, FaSearch, FaTimes, FaKey, FaList } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaTimes, FaKey, FaList, FaEdit } from 'react-icons/fa';
 import DashboardLayout from '../DashboardLayout';
 import { getScoresByTeacher, updateScore } from '../../../services/scoreService';
 import { 
@@ -30,6 +30,15 @@ const TeacherDashboard = () => {
     ungraded: 0
   });
   const [modalError, setModalError] = useState('');
+  
+  // Class Subject state
+  const [classSubject, setClassSubject] = useState(() => {
+    // Try to load saved class subject from localStorage
+    const savedSubject = localStorage.getItem('classSubject');
+    return savedSubject || 'Introduction to Computer Science';
+  });
+  const [showSubjectEditModal, setShowSubjectEditModal] = useState(false);
+  const [newSubject, setNewSubject] = useState('');
   
   // Code generation state
   const [showCodeModal, setShowCodeModal] = useState(false);
@@ -474,7 +483,7 @@ const TeacherDashboard = () => {
     
     // Get class info
     const classId = "class-" + Date.now();
-    const className = "Introduction to Computer Science";
+    const className = classSubject; // Use the dynamic class subject
     
     // Collect the student's scores
     const studentScores = {};
@@ -548,6 +557,33 @@ const TeacherDashboard = () => {
     setSelectedStudent(student);
   };
 
+  /**
+   * Open the subject edit modal
+   */
+  const openSubjectEditModal = () => {
+    setNewSubject(classSubject);
+    setShowSubjectEditModal(true);
+  };
+
+  /**
+   * Handle subject form submission
+   */
+  const handleSubjectSubmit = (e) => {
+    e.preventDefault();
+    if (!newSubject.trim()) {
+      setModalError('Subject name cannot be empty');
+      return;
+    }
+    
+    // Update class subject
+    setClassSubject(newSubject);
+    // Save to localStorage for persistence
+    localStorage.setItem('classSubject', newSubject);
+    // Close modal
+    setShowSubjectEditModal(false);
+    setModalError('');
+  };
+
   if (loading) {
     return (
       <DashboardLayout userRole="Teacher">
@@ -573,7 +609,16 @@ const TeacherDashboard = () => {
         {/* Dashboard Header with Summary Cards */}
         <div className="dashboard-header-section">
           <div className="class-heading">
-            <div className="class-title">Introduction to Computer Science</div>
+            <div className="class-title-container">
+              <div className="class-title">{classSubject}</div>
+              <button 
+                className="edit-subject-btn"
+                onClick={openSubjectEditModal}
+                title="Edit Subject"
+              >
+                <FaEdit size={16} />
+              </button>
+            </div>
             <div className="header-with-actions">
               <h1 className="dashboard-title">Class Performance Dashboard</h1>
               <div className="header-buttons">
@@ -1169,6 +1214,64 @@ const TeacherDashboard = () => {
                   Close
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Subject Modal */}
+        {showSubjectEditModal && (
+          <div className="modal-overlay">
+            <div className="modal-container">
+              <div className="modal-header">
+                <h2>Edit Class Subject</h2>
+                <button 
+                  className="close-button"
+                  onClick={() => {
+                    setShowSubjectEditModal(false);
+                    setModalError('');
+                  }}
+                >
+                  <FaTimes />
+                </button>
+              </div>
+              <form onSubmit={handleSubjectSubmit}>
+                <div className="modal-content">
+                  <p className="modal-description">
+                    Enter the subject name for this class. This will be displayed in the dashboard and shared with students.
+                  </p>
+                  <div className="form-group">
+                    <label htmlFor="subject">Subject Title</label>
+                    <input 
+                      type="text" 
+                      id="subject" 
+                      placeholder="e.g., Introduction to Computer Science"
+                      value={newSubject}
+                      onChange={(e) => setNewSubject(e.target.value)}
+                      maxLength={50}
+                      required
+                      autoFocus
+                    />
+                    <div className="char-count">{newSubject.length}/50 characters</div>
+                  </div>
+                  
+                  {modalError && <div className="error-message">{modalError}</div>}
+                </div>
+                <div className="modal-footer">
+                  <button 
+                    type="button" 
+                    className="cancel-button"
+                    onClick={() => {
+                      setShowSubjectEditModal(false);
+                      setModalError('');
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="save-button">
+                    Save Changes
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

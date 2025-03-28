@@ -1,14 +1,31 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './../../components/ui/components.css';
+import logo from '../../assets/images/logo1 1.png';
+import './GetStarted.css';
 
 const GetStarted = () => {
   return (
     <div className="get-started">
-      <header className="header">
+      <header className="header large-header">
         <div className="container">
           <div className="header-content">
-            <a href="/" className="logo-text">iskr</a>
+            <a href="/" className="logo-container">
+              <img 
+                src={logo} 
+                alt="Iskor" 
+                style={{ 
+                  height: '170px', 
+                  width: 'auto',
+                  display: 'block',
+                  backgroundColor: 'transparent',
+                  padding: '0',
+                  margin: '-45px 0', /* Increased negative margin to compensate for larger size */
+                  objectFit: 'contain',
+                  mixBlendMode: 'darken'
+                }}
+              />
+            </a>
             <nav className="nav">
               <ul className="nav-list">
                 <li><a href="/">Home</a></li>
@@ -37,7 +54,10 @@ const GetStarted = () => {
                 </div>
               </div>
               <div className="hero-image">
-                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Students working together" />
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" 
+                  alt="Students working together" 
+                  loading="lazy"
+                />
               </div>
             </div>
           </div>
@@ -126,10 +146,22 @@ const GetStarted = () => {
         <div className="container">
           <div className="footer-main">
             <div className="footer-brand">
-              <div className="logo footer-logo">
-                <span className="logo-primary">isk</span>
-                <span className="logo-secondary">r</span>
-              </div>
+              <a href="/" className="logo-container" style={{marginBottom: '24px'}}>
+                <img 
+                  src={logo} 
+                  alt="Iskor" 
+                  style={{ 
+                    height: '160px', 
+                    width: 'auto',
+                    display: 'block',
+                    backgroundColor: 'transparent',
+                    padding: '0',
+                    margin: '0',
+                    objectFit: 'contain',
+                    mixBlendMode: 'darken'
+                  }}
+                />
+              </a>
               <p className="footer-description">
                 A modern platform for students to track academic progress and improve performance.
               </p>

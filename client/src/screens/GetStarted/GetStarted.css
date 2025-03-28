@@ -1,0 +1,56 @@
+/* Additional styles for GetStarted component */
+
+/* Logo styles */
+.logo-container {
+  display: block;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  overflow: visible; /* Allow content to overflow */
+}
+
+.logo-container img {
+  height: 170px;
+  width: auto;
+  display: block;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  mix-blend-mode: darken;
+  filter: drop-shadow(0 0 0 transparent);
+  position: relative; /* Enable positioning */
+  z-index: 10; /* Ensure logo is above other elements */
+}
+
+.footer-brand .logo-container img {
+  height: 160px;
+}
+
+.large-header {
+  height: 80px !important;
+  display: flex;
+  align-items: center;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: transparent;
+}
+
+@media (max-width: 768px) {
+  .large-header {
+    height: auto !important;
+    padding: 15px 0;
+  }
+  
+  .logo-container img {
+    height: 60px;
+  }
+  
+  .footer-brand .logo-container img {
+    height: 60px;
+  }
+} 
