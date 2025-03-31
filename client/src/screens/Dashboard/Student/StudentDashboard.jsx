@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBookOpen, FaEllipsisV, FaPlus, FaTimes, FaKey, FaArrowLeft, FaChartLine, FaGraduationCap, FaArrowRight, FaCommentAlt, FaPaperPlane } from 'react-icons/fa';
+import { FaBookOpen, FaEllipsisV, FaTimes, FaKey, FaArrowLeft, FaChartLine, FaGraduationCap, FaArrowRight, FaCommentAlt, FaPaperPlane } from 'react-icons/fa';
 import { GiNotebook } from 'react-icons/gi';
 import DashboardLayout from '../DashboardLayout';
 import { validateClassAccessCode } from '../../../services/codeGeneratorService';
@@ -9,8 +9,6 @@ import './StudentDashboard.css';
 const StudentDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [classes, setClasses] = useState([]);
-  const [showAddClassModal, setShowAddClassModal] = useState(false);
-  const [newClass, setNewClass] = useState({ name: '', instructor: '' });
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [showCodeRedemptionModal, setShowCodeRedemptionModal] = useState(false);
   const [accessCode, setAccessCode] = useState('');
@@ -84,31 +82,6 @@ const StudentDashboard = () => {
     setActiveDropdown(activeDropdown === index ? null : index);
   };
 
-  const addClass = () => {
-    if (!newClass.name.trim()) {
-      alert('Please enter a class name');
-      return;
-    }
-    
-    const newClassObj = {
-      id: Date.now().toString(),
-      name: newClass.name,
-      instructor: newClass.instructor || 'Unknown Instructor',
-      color: getRandomColor(),
-      addedOn: new Date().toISOString()
-    };
-    
-    setClasses([...classes, newClassObj]);
-    setNewClass({ name: '', instructor: '' });
-    setShowAddClassModal(false);
-  };
-
-  const removeClass = (classId) => {
-    if (window.confirm('Are you sure you want to remove this class?')) {
-      setClasses(classes.filter(cls => cls.id !== classId));
-    }
-  };
-  
   const redeemAccessCode = () => {
     if (!accessCode.trim()) {
       setCodeError('Please enter an access code');
@@ -334,9 +307,6 @@ const StudentDashboard = () => {
         <div className="dashboard-header">
           <h1 className="dashboard-title">My Classes</h1>
           <div className="dashboard-actions">
-            <button className="add-class-btn" onClick={() => setShowAddClassModal(true)}>
-              <FaPlus /> Add Class
-            </button>
             <button className="redeem-code-btn" onClick={() => setShowCodeRedemptionModal(true)}>
               <FaKey /> Import with Code
             </button>
@@ -350,8 +320,7 @@ const StudentDashboard = () => {
             </div>
             <h2>No Classes Added Yet</h2>
             <p>
-              Add your first class to start tracking your academic progress or
-              import a class using an access code from your teacher.
+              Import your classes using an access code from your teacher.
             </p>
           </div>
         ) : (
@@ -405,66 +374,6 @@ const StudentDashboard = () => {
                 </div>
               </div>
             ))}
-          </div>
-        )}
-        
-        {/* Add Class Modal */}
-        {showAddClassModal && (
-          <div className="modal-overlay">
-            <div className="modal-container">
-              <div className="modal-header">
-                <h3>Add New Class</h3>
-                <button 
-                  className="modal-close-btn"
-                  onClick={() => setShowAddClassModal(false)}
-                >
-                  <FaTimes />
-                </button>
-              </div>
-              
-              <div className="modal-body">
-                <div className="form-group">
-                  <label htmlFor="className">Class Name</label>
-                  <input
-                    type="text"
-                    id="className"
-                    placeholder="e.g. Introduction to Computer Science"
-                    value={newClass.name}
-                    onChange={(e) => setNewClass({...newClass, name: e.target.value})}
-                    required
-                    autoFocus
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label htmlFor="instructorName">Instructor Name (Optional)</label>
-                  <input
-                    type="text"
-                    id="instructorName"
-                    placeholder="e.g. Prof. Smith"
-                    value={newClass.instructor}
-                    onChange={(e) => setNewClass({...newClass, instructor: e.target.value})}
-                  />
-                </div>
-              </div>
-              
-              <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="cancel-btn"
-                  onClick={() => setShowAddClassModal(false)}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="button" 
-                  className="submit-btn"
-                  onClick={addClass}
-                >
-                  Add Class
-                </button>
-              </div>
-            </div>
           </div>
         )}
         
