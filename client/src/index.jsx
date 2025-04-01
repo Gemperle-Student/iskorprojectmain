@@ -12,7 +12,7 @@ import './index.css'
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/" element={<Navigate to="/get-started" replace />} />
         <Route path="/landing" element={<Landingpage />} />
