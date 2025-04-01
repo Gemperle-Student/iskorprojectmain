@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Landingpage from './screens/Landingpage/LandingPage'
 import GetStarted from './screens/GetStarted/GetStarted'
 import Login from './screens/Login/Login'
@@ -12,7 +12,7 @@ import './index.css'
 
 const App = () => {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/get-started" replace />} />
         <Route path="/landing" element={<Landingpage />} />
@@ -27,7 +27,7 @@ const App = () => {
         <Route path="/dashboard/teacher" element={<TeacherDashboard />} />
         <Route path="/dashboard/class/:classId" element={<StudentDashboard />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
